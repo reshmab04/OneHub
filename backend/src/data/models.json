@@ -1,0 +1,122 @@
+[
+  {
+    "id": "gpt-4o",
+    "name": "GPT-4o",
+    "provider": "OpenAI",
+    "description": "OpenAI's most capable multimodal model, excelling at text, vision, and audio tasks with fast response times.",
+    "capabilities": ["Text generation", "Code generation", "Vision", "Audio", "Function calling"],
+    "useCases": ["Chatbots", "Content creation", "Code assistance", "Data analysis", "Multimodal applications"],
+    "categories": ["Writing", "Coding", "Thinking & Reasoning", "Text Generation"],
+    "scores": { "writing": 90, "coding": 88, "reasoning": 90, "textGeneration": 92, "imageGeneration": null },
+    "scoreSource": "Illustrative rating based on public benchmarks (MMLU, HumanEval). Not a verified benchmark.",
+    "url": "https://openai.com/gpt-4o"
+  },
+  {
+    "id": "claude-3-5-sonnet",
+    "name": "Claude 3.5 Sonnet",
+    "provider": "Anthropic",
+    "description": "Anthropic's balanced model offering strong reasoning, coding, and writing at high speed.",
+    "capabilities": ["Text generation", "Code generation", "Analysis", "Vision", "Long context"],
+    "useCases": ["Code assistance", "Document analysis", "Creative writing", "Research", "Customer support"],
+    "categories": ["Writing", "Coding", "Thinking & Reasoning", "Text Generation"],
+    "scores": { "writing": 92, "coding": 92, "reasoning": 91, "textGeneration": 93, "imageGeneration": null },
+    "scoreSource": "Illustrative rating based on public benchmarks (MMLU, HumanEval, GPQA). Not a verified benchmark.",
+    "url": "https://www.anthropic.com/claude"
+  },
+  {
+    "id": "gemini-2-0-flash",
+    "name": "Gemini 2.0 Flash",
+    "provider": "Google",
+    "description": "Google's fast and efficient multimodal model with strong reasoning and a large context window.",
+    "capabilities": ["Text generation", "Code generation", "Vision", "Audio", "Long context"],
+    "useCases": ["Rapid prototyping", "Multimodal applications", "Search augmentation", "Translation"],
+    "categories": ["Writing", "Coding", "Thinking & Reasoning", "Text Generation"],
+    "scores": { "writing": 85, "coding": 84, "reasoning": 86, "textGeneration": 87, "imageGeneration": null },
+    "scoreSource": "Illustrative rating based on public benchmarks. Not a verified benchmark.",
+    "url": "https://deepmind.google/technologies/gemini/"
+  },
+  {
+    "id": "llama-3-1-405b",
+    "name": "Llama 3.1 405B",
+    "provider": "Meta",
+    "description": "Meta's largest open-weight model with strong performance across text and code tasks.",
+    "capabilities": ["Text generation", "Code generation", "Multilingual", "Long context"],
+    "useCases": ["Open-source deployments", "Research", "Enterprise applications", "Fine-tuning"],
+    "categories": ["Writing", "Coding", "Thinking & Reasoning", "Text Generation"],
+    "scores": { "writing": 84, "coding": 82, "reasoning": 84, "textGeneration": 85, "imageGeneration": null },
+    "scoreSource": "Illustrative rating based on public benchmarks. Not a verified benchmark.",
+    "url": "https://llama.meta.com/"
+  },
+  {
+    "id": "mistral-large",
+    "name": "Mistral Large",
+    "provider": "Mistral AI",
+    "description": "Mistral AI's flagship model with strong multilingual and reasoning capabilities.",
+    "capabilities": ["Text generation", "Code generation", "Multilingual", "Function calling"],
+    "useCases": ["Enterprise applications", "Code assistance", "Multilingual content", "Data extraction"],
+    "categories": ["Writing", "Coding", "Thinking & Reasoning", "Text Generation"],
+    "scores": { "writing": 82, "coding": 80, "reasoning": 83, "textGeneration": 83, "imageGeneration": null },
+    "scoreSource": "Illustrative rating based on public benchmarks. Not a verified benchmark.",
+    "url": "https://mistral.ai/"
+  },
+  {
+    "id": "dall-e-3",
+    "name": "DALL-E 3",
+    "provider": "OpenAI",
+    "description": "OpenAI's image generation model with strong prompt following and text rendering capabilities.",
+    "capabilities": ["Image generation", "Text rendering in images", "Style control"],
+    "useCases": ["Marketing visuals", "Concept art", "Design mockups", "Social media content"],
+    "categories": ["Image Generation"],
+    "scores": { "writing": null, "coding": null, "reasoning": null, "textGeneration": null, "imageGeneration": 90 },
+    "scoreSource": "Illustrative rating. Not a verified benchmark.",
+    "url": "https://openai.com/dall-e-3"
+  },
+  {
+    "id": "midjourney-v6",
+    "name": "Midjourney v6",
+    "provider": "Midjourney",
+    "description": "Leading image generation model known for artistic quality and photorealistic outputs.",
+    "capabilities": ["Image generation", "Style transfer", "Upscaling", "Variation generation"],
+    "useCases": ["Art creation", "Photography-style images", "Brand visuals", "Game concept art"],
+    "categories": ["Image Generation"],
+    "scores": { "writing": null, "coding": null, "reasoning": null, "textGeneration": null, "imageGeneration": 93 },
+    "scoreSource": "Illustrative rating based on community consensus. Not a verified benchmark.",
+    "url": "https://www.midjourney.com/"
+  },
+  {
+    "id": "stable-diffusion-xl",
+    "name": "Stable Diffusion XL",
+    "provider": "Stability AI",
+    "description": "Open-source image generation model offering high-quality outputs with local deployment options.",
+    "capabilities": ["Image generation", "Inpainting", "Image-to-image", "ControlNet support"],
+    "useCases": ["Open-source image generation", "Fine-tuning", "Local deployment", "Custom pipelines"],
+    "categories": ["Image Generation"],
+    "scores": { "writing": null, "coding": null, "reasoning": null, "textGeneration": null, "imageGeneration": 82 },
+    "scoreSource": "Illustrative rating. Not a verified benchmark.",
+    "url": "https://stability.ai/"
+  },
+  {
+    "id": "o1",
+    "name": "o1",
+    "provider": "OpenAI",
+    "description": "OpenAI's reasoning-focused model that uses chain-of-thought to solve complex problems.",
+    "capabilities": ["Advanced reasoning", "Math", "Code generation", "Science"],
+    "useCases": ["Complex problem solving", "Scientific research", "Advanced math", "Strategic planning"],
+    "categories": ["Thinking & Reasoning", "Coding"],
+    "scores": { "writing": 78, "coding": 90, "reasoning": 96, "textGeneration": 80, "imageGeneration": null },
+    "scoreSource": "Illustrative rating based on public benchmarks (GPQA, MATH, competition results). Not a verified benchmark.",
+    "url": "https://openai.com/o1"
+  },
+  {
+    "id": "deepseek-v3",
+    "name": "DeepSeek-V3",
+    "provider": "DeepSeek",
+    "description": "Strong open-weight model with competitive coding and reasoning capabilities at efficient inference cost.",
+    "capabilities": ["Text generation", "Code generation", "Math", "Reasoning"],
+    "useCases": ["Code assistance", "Research", "Open-source deployment", "Cost-efficient inference"],
+    "categories": ["Coding", "Thinking & Reasoning", "Text Generation"],
+    "scores": { "writing": 80, "coding": 86, "reasoning": 85, "textGeneration": 82, "imageGeneration": null },
+    "scoreSource": "Illustrative rating based on public benchmarks. Not a verified benchmark.",
+    "url": "https://www.deepseek.com/"
+  }
+]

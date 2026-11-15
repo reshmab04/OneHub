@@ -1,0 +1,291 @@
+<title>OneHub Design Preview</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap">
+<style>
+  /* Layout: vertical showcase with paired light/dark comparisons */
+  :root {
+    --bg: #fafafa;
+    --fg: #1a1a1a;
+    --muted: #71717a;
+    --surface: #ffffff;
+    --border: #e4e4e7;
+    --accent: #18181b;
+    --accent-fg: #ffffff;
+    --radius: 12px;
+    --font-display: 'Space Grotesk', sans-serif;
+    --font-body: 'Inter', sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0a0a0a;
+      --fg: #fafafa;
+      --muted: #a1a1aa;
+      --surface: #18181b;
+      --border: #27272a;
+      --accent: #fafafa;
+      --accent-fg: #0a0a0a;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0a0a0a;
+    --fg: #fafafa;
+    --muted: #a1a1aa;
+    --surface: #18181b;
+    --border: #27272a;
+    --accent: #fafafa;
+    --accent-fg: #0a0a0a;
+    color-scheme: dark;
+  }
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--font-body);
+    line-height: 1.6;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+    padding-block: 0;
+    max-width: 960px;
+    margin: 0 auto;
+  }
+  h1, h2, h3 { font-family: var(--font-display); line-height: 1.2; text-wrap: balance; }
+  h1 { font-size: 2rem; font-weight: 700; margin: 2.5rem 0 0.5rem; }
+  h2 { font-size: 1.25rem; font-weight: 600; margin: 2.5rem 0 0.75rem; color: var(--fg); }
+  h3 { font-size: 0.875rem; font-weight: 500; margin: 0 0 0.5rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
+  p { color: var(--muted); margin: 0 0 1.5rem; font-size: 0.9375rem; }
+  .badge {
+    display: inline-block;
+    background: var(--accent);
+    color: var(--accent-fg);
+    font-family: var(--font-display);
+    font-size: 0.6875rem;
+    font-weight: 600;
+    padding: 0.25em 0.75em;
+    border-radius: 999px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+  }
+  .header {
+    padding: 3rem 0 1rem;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 2rem;
+  }
+  .header p { max-width: 520px; }
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    margin-top: 1rem;
+    font-size: 0.8125rem;
+    color: var(--muted);
+  }
+  .meta span { display: flex; align-items: center; gap: 0.35em; }
+  .meta strong { color: var(--fg); font-weight: 600; }
+
+  .section { margin-bottom: 3rem; }
+  .pair {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+  @media (max-width: 600px) { .pair { grid-template-columns: 1fr; } }
+  .img-card {
+    border-radius: var(--radius);
+    overflow: hidden;
+    border: 1px solid var(--border);
+    background: var(--surface);
+  }
+  .img-card img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+  .img-card .label {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--muted);
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .img-card .label .dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    display: inline-block;
+  }
+  .dot-light { background: #f59e0b; }
+  .dot-dark { background: #6366f1; }
+
+  .mobile-row {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+  @media (max-width: 600px) { .mobile-row { grid-template-columns: 1fr; } }
+  .mobile-card {
+    border-radius: var(--radius);
+    overflow: hidden;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    max-width: 280px;
+    margin: 0 auto;
+  }
+  .mobile-card img { width: 100%; height: auto; display: block; }
+  .mobile-card .label {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--muted);
+    border-top: 1px solid var(--border);
+  }
+
+  .tech-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+  }
+  .tech-chip {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.625rem 0.75rem;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    text-align: center;
+  }
+
+  .phase-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 2rem;
+  }
+  .phase-list li {
+    padding: 0.625rem 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.875rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  .phase-list li:last-child { border-bottom: none; }
+  .check { color: #22c55e; font-weight: 700; }
+  .pending { color: var(--muted); }
+</style>
+
+<div class="header">
+  <span class="badge">Phase 3 Complete</span>
+  <h1>OneHub — Design Preview</h1>
+  <p>Everything. One Platform. — GitHub Trending, AI Models Directory, and Local File Manager with Cloud Sync.</p>
+  <div class="meta">
+    <span><strong>Stack:</strong> React + TypeScript + Vite</span>
+    <span><strong>UI:</strong> shadcn/ui + Tailwind CSS v4</span>
+    <span><strong>Backend:</strong> Node.js + Express</span>
+    <span><strong>Date:</strong> Nov 14, 2026</span>
+  </div>
+</div>
+
+<!-- GitHub Trending -->
+<div class="section">
+  <h2>1. GitHub Trending</h2>
+  <h3>Desktop — Light / Dark</h3>
+  <div class="pair">
+    <div class="img-card">
+      <img src="01-trending-light-desktop.jpg" alt="GitHub Trending in light mode">
+      <div class="label"><span>Light mode</span><span class="dot dot-light"></span></div>
+    </div>
+    <div class="img-card">
+      <img src="04-trending-dark-desktop.jpg" alt="GitHub Trending in dark mode">
+      <div class="label"><span>Dark mode</span><span class="dot dot-dark"></span></div>
+    </div>
+  </div>
+</div>
+
+<!-- AI Models -->
+<div class="section">
+  <h2>2. AI Models</h2>
+  <h3>Desktop — Light / Dark</h3>
+  <div class="pair">
+    <div class="img-card">
+      <img src="02-models-light-desktop.jpg" alt="AI Models in light mode">
+      <div class="label"><span>Light mode</span><span class="dot dot-light"></span></div>
+    </div>
+    <div class="img-card">
+      <img src="05-models-dark-desktop.jpg" alt="AI Models in dark mode">
+      <div class="label"><span>Dark mode</span><span class="dot dot-dark"></span></div>
+    </div>
+  </div>
+</div>
+
+<!-- File Manager -->
+<div class="section">
+  <h2>3. File Manager</h2>
+  <h3>Desktop — Light / Dark</h3>
+  <div class="pair">
+    <div class="img-card">
+      <img src="03-files-light-desktop.jpg" alt="File Manager in light mode">
+      <div class="label"><span>Light mode</span><span class="dot dot-light"></span></div>
+    </div>
+    <div class="img-card">
+      <img src="06-files-dark-desktop.jpg" alt="File Manager in dark mode">
+      <div class="label"><span>Dark mode</span><span class="dot dot-dark"></span></div>
+    </div>
+  </div>
+</div>
+
+<!-- Mobile -->
+<div class="section">
+  <h2>4. Mobile Responsive (375px)</h2>
+  <h3>Dark mode — Trending / AI Models</h3>
+  <div class="mobile-row">
+    <div class="mobile-card">
+      <img src="07-trending-dark-mobile.jpg" alt="Trending on mobile">
+      <div class="label">GitHub Trending — Mobile</div>
+    </div>
+    <div class="mobile-card">
+      <img src="08-models-dark-mobile.jpg" alt="AI Models on mobile">
+      <div class="label">AI Models — Mobile</div>
+    </div>
+  </div>
+</div>
+
+<!-- Project Progress -->
+<div class="section">
+  <h2>5. Project Progress</h2>
+  <ul class="phase-list">
+    <li><span class="check">&#10003;</span> Phase 1 — Project analysis &amp; planning</li>
+    <li><span class="check">&#10003;</span> Phase 2 — Project scaffolding (frontend + backend)</li>
+    <li><span class="check">&#10003;</span> Phase 3 — Dashboard layout, design system, responsive UI</li>
+    <li><span class="pending">&#9675;</span> Phase 4 — GitHub Trending (search, filters, repo cards)</li>
+    <li><span class="pending">&#9675;</span> Phase 5 — AI Models Directory &amp; Comparison</li>
+    <li><span class="pending">&#9675;</span> Phase 6 — Local File Manager (File System Access API)</li>
+    <li><span class="pending">&#9675;</span> Phase 7 — Cloud storage &amp; sync (Supabase)</li>
+    <li><span class="pending">&#9675;</span> Phase 8 — Responsive polish, accessibility, error handling</li>
+    <li><span class="pending">&#9675;</span> Phase 9 — Testing &amp; bug fixes</li>
+    <li><span class="pending">&#9675;</span> Phase 10 — README &amp; documentation</li>
+  </ul>
+</div>
+
+<!-- Key Features Implemented -->
+<div class="section">
+  <h2>6. Features Implemented So Far</h2>
+  <div class="tech-grid">
+    <div class="tech-chip">Collapsible sidebar</div>
+    <div class="tech-chip">Dark/Light toggle</div>
+    <div class="tech-chip">Mobile drawer</div>
+    <div class="tech-chip">Dynamic headers</div>
+    <div class="tech-chip">Skeleton loaders</div>
+    <div class="tech-chip">Category filters</div>
+    <div class="tech-chip">Search inputs</div>
+    <div class="tech-chip">Backend API</div>
+    <div class="tech-chip">GitHub service</div>
+    <div class="tech-chip">Models service</div>
+    <div class="tech-chip">Cloud storage</div>
+    <div class="tech-chip">Path security</div>
+  </div>
+</div>
