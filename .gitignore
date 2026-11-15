@@ -34,7 +34,6 @@ Thumbs.db
 *.local
 
 # Local-only documentation
-README.md
 APPROACH.md
 
 # Claude Code session data
