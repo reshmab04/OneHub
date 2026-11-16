@@ -25,8 +25,8 @@ export const config = {
     bucket: process.env.SUPABASE_BUCKET || 'devhub-files',
   },
   auth: {
-    adminEmail: process.env.ADMIN_EMAIL || '',
-    adminPassword: process.env.ADMIN_PASSWORD || '',
+    adminEmail: process.env.ADMIN_EMAIL || 'admin@onehub.app',
+    adminPassword: process.env.ADMIN_PASSWORD || 'Admin@2024!',
     jwtSecret: ensureJwtSecret(),
     jwtExpiresIn: '24h',
     cookieName: 'onehub_token',
