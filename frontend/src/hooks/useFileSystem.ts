@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef } from 'react';
 
 export interface FileEntry {
   name: string;
@@ -7,22 +7,81 @@ export interface FileEntry {
   handle: FileSystemFileHandle | FileSystemDirectoryHandle;
   children?: FileEntry[];
   expanded?: boolean;
+  size?: number;
+  fileCount?: number;
+  folderCount?: number;
 }
 
-async function readDirectory(
+export interface ScanStats {
+  totalFiles: number;
+  totalFolders: number;
+  totalSize: number;
+  scanTime: number;
+}
+
+async function scanDirectory(
   dirHandle: FileSystemDirectoryHandle,
-  parentPath: string
+  parentPath: string,
+  stats: { files: number; folders: number; size: number },
+  signal?: AbortSignal
 ): Promise<FileEntry[]> {
+  if (signal?.aborted) return [];
+
   const entries: FileEntry[] = [];
-  for await (const [name, handle] of dirHandle.entries()) {
-    entries.push({
-      name,
-      kind: handle.kind,
-      path: parentPath ? `${parentPath}/${name}` : name,
-      handle,
-      children: handle.kind === 'directory' ? undefined : undefined,
-    });
+
+  try {
+    for await (const [name, handle] of dirHandle.entries()) {
+      if (signal?.aborted) break;
+
+      if (handle.kind === 'directory') {
+        stats.folders++;
+        const childPath = parentPath ? `${parentPath}/${name}` : name;
+        const children = await scanDirectory(
+          handle as FileSystemDirectoryHandle,
+          childPath,
+          stats,
+          signal
+        );
+        const fileCount = children.reduce(
+          (sum, c) => sum + (c.kind === 'file' ? 1 : (c.fileCount ?? 0)),
+          0
+        );
+        const folderCount = children.reduce(
+          (sum, c) => sum + (c.kind === 'directory' ? 1 : 0) + (c.folderCount ?? 0),
+          0
+        );
+        entries.push({
+          name,
+          kind: 'directory',
+          path: childPath,
+          handle,
+          children,
+          expanded: false,
+          fileCount,
+          folderCount,
+        });
+      } else {
+        stats.files++;
+        const childPath = parentPath ? `${parentPath}/${name}` : name;
+        let size = 0;
+        try {
+          const file = await (handle as FileSystemFileHandle).getFile();
+          size = file.size;
+          stats.size += size;
+        } catch {}
+        entries.push({
+          name,
+          kind: 'file',
+          path: childPath,
+          handle,
+          size,
+        });
+      }
+    }
+  } catch {
+    // Permission denied or inaccessible directory
   }
+
   return entries.sort((a, b) => {
     if (a.kind !== b.kind) return a.kind === 'directory' ? -1 : 1;
     return a.name.localeCompare(b.name);
@@ -34,7 +93,47 @@ export function useFileSystem() {
   const [rootName, setRootName] = useState('');
   const [entries, setEntries] = useState<FileEntry[]>([]);
   const [loading, setLoading] = useState(false);
+  const [scanning, setScanning] = useState(false);
+  const [scanProgress, setScanProgress] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const [stats, setStats] = useState<ScanStats | null>(null);
+  const abortRef = useRef<AbortController | null>(null);
+
+  const doScan = useCallback(async (handle: FileSystemDirectoryHandle) => {
+    if (abortRef.current) abortRef.current.abort();
+    const controller = new AbortController();
+    abortRef.current = controller;
+
+    setScanning(true);
+    setScanProgress('Scanning folders...');
+    const startTime = Date.now();
+    const counters = { files: 0, folders: 0, size: 0 };
+
+    const progressInterval = setInterval(() => {
+      setScanProgress(
+        `Scanning... ${counters.folders} folders, ${counters.files} files found`
+      );
+    }, 200);
+
+    try {
+      const items = await scanDirectory(handle, '', counters, controller.signal);
+      clearInterval(progressInterval);
+      if (!controller.signal.aborted) {
+        setEntries(items);
+        setStats({
+          totalFiles: counters.files,
+          totalFolders: counters.folders,
+          totalSize: counters.size,
+          scanTime: Date.now() - startTime,
+        });
+      }
+    } catch {
+      clearInterval(progressInterval);
+    } finally {
+      setScanning(false);
+      setScanProgress('');
+    }
+  }, []);
 
   const requestAccess = useCallback(async () => {
     try {
@@ -43,40 +142,33 @@ export function useFileSystem() {
       const handle = await window.showDirectoryPicker({ mode: 'readwrite' });
       setRootHandle(handle);
       setRootName(handle.name);
-      const items = await readDirectory(handle, '');
-      setEntries(items);
+      setLoading(false);
+      await doScan(handle);
     } catch (err: any) {
       if (err.name !== 'AbortError') {
         setError(err.message || 'Failed to access folder');
       }
-    } finally {
       setLoading(false);
     }
+  }, [doScan]);
+
+  const toggleDirectory = useCallback((entry: FileEntry) => {
+    if (entry.kind !== 'directory') return;
+    setEntries((prev) => {
+      function updateTree(items: FileEntry[]): FileEntry[] {
+        return items.map((item) => {
+          if (item.path === entry.path) {
+            return { ...item, expanded: !item.expanded };
+          }
+          if (item.children) {
+            return { ...item, children: updateTree(item.children) };
+          }
+          return item;
+        });
+      }
+      return updateTree(prev);
+    });
   }, []);
-
-  const expandDirectory = useCallback(
-    async (entry: FileEntry) => {
-      if (entry.kind !== 'directory') return;
-      const dirHandle = entry.handle as FileSystemDirectoryHandle;
-      const children = await readDirectory(dirHandle, entry.path);
-
-      setEntries((prev) => {
-        function updateTree(items: FileEntry[]): FileEntry[] {
-          return items.map((item) => {
-            if (item.path === entry.path) {
-              return { ...item, children, expanded: !item.expanded };
-            }
-            if (item.children) {
-              return { ...item, children: updateTree(item.children) };
-            }
-            return item;
-          });
-        }
-        return updateTree(prev);
-      });
-    },
-    []
-  );
 
   const readFile = useCallback(async (entry: FileEntry): Promise<string> => {
     const fileHandle = entry.handle as FileSystemFileHandle;
@@ -111,10 +203,9 @@ export function useFileSystem() {
       await writable.write(content);
       await writable.close();
 
-      const items = await readDirectory(rootHandle, '');
-      setEntries(items);
+      await doScan(rootHandle);
     },
-    [rootHandle]
+    [rootHandle, doScan]
   );
 
   const getFileBlob = useCallback(async (entry: FileEntry): Promise<File> => {
@@ -124,14 +215,8 @@ export function useFileSystem() {
 
   const refresh = useCallback(async () => {
     if (!rootHandle) return;
-    setLoading(true);
-    try {
-      const items = await readDirectory(rootHandle, '');
-      setEntries(items);
-    } finally {
-      setLoading(false);
-    }
-  }, [rootHandle]);
+    await doScan(rootHandle);
+  }, [rootHandle, doScan]);
 
   return {
     isSupported: 'showDirectoryPicker' in window,
@@ -139,9 +224,12 @@ export function useFileSystem() {
     rootName,
     entries,
     loading,
+    scanning,
+    scanProgress,
     error,
+    stats,
     requestAccess,
-    expandDirectory,
+    toggleDirectory,
     readFile,
     writeFile,
     createFile,
